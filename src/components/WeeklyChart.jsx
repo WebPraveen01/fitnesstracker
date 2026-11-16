@@ -19,7 +19,11 @@ function WeeklyChart({ records = [] }) {
     const date = new Date()
     date.setDate(today.getDate() - (6 - index))
 
-    const formattedDate = date.toISOString().split('T')[0]
+    const formattedDate = [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, '0'),
+      String(date.getDate()).padStart(2, '0')
+    ].join('-')
 
     const record = records.find(item => item.date === formattedDate)
     //console.log('Chart date:', formattedDate, 'Matched record:', record)
@@ -28,14 +32,19 @@ function WeeklyChart({ records = [] }) {
       date: date.toLocaleDateString('en-US', {
         weekday: 'short'
       }),
+      hasRecord: Boolean(record),
       caloriesIntake: record ? record.caloriesIntake : 0,
       caloriesBurned: record ? record.caloriesBurned : 0
     }
   })
 
+  if (!last7Days.some(day => day.hasRecord)) {
+    return null
+  }
+
   return (
     <div className="weekly-chart">
-      <h3>Weekly Health Trends:</h3>
+      <h3>Weekly Health Trends</h3>
 
       <ResponsiveContainer width="100%" height={250}>
         <BarChart data={last7Days}>
